@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>ECサイト</title>
+<link href="/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+<script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet"
+	href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="/js/common.js" th:src="@{/js/common.js}"></script><!-- common.jsのリンク -->
+<script>
+let cartList = [];
+
+$(() => {
+	$('#loginForm').on('submit', login);
+	$('.cartBtn').on('click', addCart);
+	$('#buyBtn').on('click', buy);
+	$("#historyBtn").on('click', showHistory);
+	
+	$("#history").dialog({
+		autoOpen: false,
+		width: 550,
+		modal: true,
+		buttons: [
+			{
+				text: 'Ok',
+				click: function() {
+					$(this).dialog("close");
+				}
+			},
+		]
+	});
+});
+
+</script>
+</head>
+<body>
+<header>
+	<h1>My EC Site</h1>
+	<div>
+	<!-- <form　action="＃">はデフォルト動作が自己遷移と設定,
+	common.jsでデフォルトのキャンセル後ajax（非同期）通信をさせるため、form内は何も起きず遷移しない結果になるが暫定的に自己遷移の＃とする。 -->
+		<form name="loginForm" id="loginForm" method="post" action="#">
+			User name:<input type="text" name="userName" />
+			Password　:<input type="password" name="password" />
+			<!-- <button type="submit">にすると上部JSを見た時点でloginForm部品とわかりやすい。
+			対して<button type="button">にしてしまうと上部JSでForm部品とわかりにくいし<button id>の設定も必要になってしまう。-->
+			<button type="submit">Login</button>
+		</form>
+		<br />
+	<!--<span>はインラインのグループ化のため、文字の高さと幅のみを持ち、横に要素を設定できる等、今後のシステムの拡張に対応しやすい。
+	対して<p>はブロック要素のため行間が広めの改行をされてしまうので、<span>を使用-->
+		<span id="welcome"> -- ようこそ！　ゲスト　さん</span>
+		<input type="hidden" id="hiddenUserId" value="0" />
+	</div>
+</header>
+
+<table>
+	<thead>
+		<tr>
+			<th>ID</th><th>商品名</th><th>価格</th><th>注文数</th><th>カート</th>
+		</tr>
+	</thead>
+	<tbody>
+	<!-- Thymeleafを使用したループ処理。
+	IndexControllerでModelオブジェクトに追加されたキーで取得した値（今回はListコレクション）をループ -->
+		<tr th:each="item: ${goods}">
+			<td th:text="${item.id}" />
+			<td th:text="${item.goodsName}" />
+			<td th:text="${item.price}" />
+			<td><input type="number" class="count" value="0" /></td>
+			<td><button class="cartBtn">カートに入れる</button></td>
+		</tr>
+	</tbody>
+</table>
+
+<fieldset>
+	<legend>カート</legend>
+	<table id="cart">
+		<thead>
+		<tr>
+			<th>ID</th><th>商品名</th><th>価格</th><th>注文数</th><th>カート</th>
+		</tr>
+		</thead>
+		<tbody>
+		
+		</tbody>
+	</table>
+	<button id="buyBtn">購入</button>
+	<button id="historyBtn">履歴</button>
+</fieldset>
+
+<div id="history" title="購入履歴" style="display:none;">
+	<table id="historyTable">
+		<thead>
+			<tr>
+				<th>商品名</th><th>注文数</th><th>購入日時</th>
+			</tr>
+		</thead>
+		<tbody>
+		
+		</tbody>
+	</table>
+</div>
+</body>
+</html>
